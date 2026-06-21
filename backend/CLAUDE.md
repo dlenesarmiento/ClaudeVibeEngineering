@@ -44,16 +44,32 @@ router = create_stream_router(price_cache)  # Returns FastAPI APIRouter
 
 Default tickers: AAPL, GOOGL, MSFT, AMZN, TSLA, NVDA, META, JPM, V, NFLX. Seed prices and per-ticker volatility/drift params are in `app/market/seed_prices.py`.
 
-## Running Tests
+## Test Suite
+
+**88 tests, 99% coverage** across 7 modules in `tests/market/`.
+
+| Module | Tests | Notes |
+|--------|-------|-------|
+| test_models.py | 11 | 100% — all properties, immutability, serialisation |
+| test_cache.py | 13 | 100% — version counter, direction logic, thread-safe ops |
+| test_simulator.py | 17 | 100% — GBM math, Cholesky correlations, tick bounds |
+| test_simulator_source.py | 13 | async integration, exception resilience, ticker normalisation |
+| test_factory.py | 7 | 100% — all env var cases, cache injection |
+| test_massive.py | 13 | 94% — REST polling, tick normalisation |
+| test_stream.py | 12 | 97% — SSE format, retry directive, version dedup, teardown |
 
 ```bash
-uv run --extra dev pytest -v              # All tests
-uv run --extra dev pytest --cov=app       # With coverage
-uv run --extra dev ruff check app/ tests/ # Lint
+uv run pytest -v                          # All tests
+uv run pytest --cov=app/market            # With coverage report
+uv run ruff check app/ tests/             # Lint
 ```
 
 ## Demo
 
+A Rich terminal dashboard showing live simulated prices, sparklines, and event log:
+
 ```bash
-uv run market_data_demo.py   # Live terminal dashboard with simulated prices
+uv run market_data_demo.py
 ```
+
+Runs for 60 seconds (or until Ctrl+C), then prints a session summary comparing final prices to seed prices.
