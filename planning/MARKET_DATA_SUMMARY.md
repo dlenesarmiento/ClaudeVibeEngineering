@@ -44,23 +44,25 @@ MarketDataSource (ABC)
 
 ## Test Suite
 
-**73 tests, all passing.** 6 test modules in `backend/tests/market/`.
+**88 tests, all passing.** 7 test modules in `backend/tests/market/`.
 
 | Module | Tests | Coverage |
 |--------|-------|----------|
 | test_models.py | 11 | models.py: 100% |
 | test_cache.py | 13 | cache.py: 100% |
-| test_simulator.py | 17 | simulator.py: 98% |
-| test_simulator_source.py | 10 | (integration tests) |
+| test_simulator.py | 17 | simulator.py: 100% |
+| test_simulator_source.py | 13 | (integration tests — includes exception resilience, ticker normalisation) |
 | test_factory.py | 7 | factory.py: 100% |
-| test_massive.py | 13 | massive_client.py: 56% (expected — API methods mocked) |
+| test_massive.py | 13 | massive_client.py: 94% (expected — API methods mocked) |
+| test_stream.py | 12 | stream.py: 97% |
 
-Overall coverage: 84%.
+Overall coverage: 99%.
 
 ## Code Review & Fixes Applied
 
-A comprehensive code review identified 7 issues. All were resolved:
+Two rounds of code review identified 13 issues total. All were resolved.
 
+**Round 1 (2026-02-10):** 6 issues
 1. **pyproject.toml build config** — added `[tool.hatch.build.targets.wheel] packages = ["app"]`
 2. **Lazy imports removed** — `massive` is a core dependency; imports moved to top level
 3. **SSE return type fixed** — `_generate_events` annotated as `AsyncGenerator[str, None]`
@@ -68,6 +70,14 @@ A comprehensive code review identified 7 issues. All were resolved:
 5. **Correlation constants cleaned up** — removed unused `DEFAULT_CORR`, consolidated into `CROSS_GROUP_CORR`
 6. **Unused test imports removed** — `pytest`, `math`, `asyncio` cleaned from 4 test files
 7. **Massive test mocks fixed** — `source._client` set in tests, patches target correct names
+
+**Round 2 (2026-06-20):** 6 issues
+1. **SSE tests added** — `test_stream.py` (12 tests); `stream.py` coverage 33% → 97%
+2. **Ticker normalisation** — `.upper().strip()` added to `SimulatorDataSource.add_ticker/remove_ticker`
+3. **Router singleton fixed** — `APIRouter(...)` moved inside `create_stream_router()`
+4. **Exception handler tested** — fault-injection test added to `test_simulator_source.py`
+5. **Dead guard removed** — unreachable `if ticker in self._prices` removed from `_add_ticker_internal`
+6. **TSLA correlation comment** — clarified that TSLA's `tech` group membership is overridden by `TSLA_CORR`
 
 ## Demo
 

@@ -75,7 +75,7 @@ finally/
 
 | Component | Status |
 |---|---|
-| Market data backend (simulator + Massive API, SSE, cache) | Complete — 73 tests passing |
+| Market data backend (simulator + Massive API, SSE, cache) | Complete — 88 tests passing, 99% coverage |
 | REST API (portfolio, watchlist, chat, health) | Pending |
 | LLM integration (chat + trade execution) | Pending |
 | Frontend (trading terminal UI) | Pending |
